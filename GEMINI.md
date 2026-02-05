@@ -441,8 +441,23 @@ This demo will be considered successful if it demonstrates:
 
 ---
 
+## Workflow
+
+### Development Process
+To maintain a high-quality codebase and stable production environment, all contributors must follow this workflow:
+
+1.  **Branching Strategy**: NEVER make changes directly to the `main` branch. All development must occur in feature or bugfix branches.
+2.  **Naming Convention**: Use descriptive names for branches (e.g., `feature/ai-triage` or `fix/login-error`).
+3.  **Frequent Commits**: Commit your work frequently with clear, concise messages. This makes it easier to track changes and revert if necessary.
+4.  **Pull Requests**: Once a task is complete, open a Pull Request (PR) to merge your branch into `main`.
+5.  **Code Quality**: Ensure all tests pass and the code adheres to project standards before requesting a review.
+6.  **Atomic Changes**: Keep PRs focused on a single feature or fix to simplify the review process.
+
+---
+
 ## Repository Information
 
+- **Repository Link**: [https://github.com/agylabs/customer-support-portal](https://github.com/agylabs/customer-support-portal)
 - **Repository Name**: `customer-support-portal`
 - **Organization**: `agylabs`
 - **Visibility**: Public
