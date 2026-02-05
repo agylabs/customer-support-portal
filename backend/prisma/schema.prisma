@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  AGENT
+  CUSTOMER
+}
+
+enum UserStatus {
+  ONLINE
+  AWAY
+  OFFLINE
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  PENDING
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MessageType {
+  CUSTOMER
+  AGENT
+  SYSTEM
+  INTERNAL_NOTE
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String
+  role      UserRole   @default(CUSTOMER)
+  avatar    String?
+  status    UserStatus @default(OFFLINE)
+  skills    String[]   @default([])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  ticketsCreated  Ticket[]  @relation("CustomerTickets")
+  ticketsAssigned Ticket[]  @relation("AgentTickets")
+  messages        Message[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Ticket {
+  id              String         @id @default(cuid())
+  ticketNumber    String         @unique
+  subject         String
+  description     String
+  status          TicketStatus   @default(OPEN)
+  priority        TicketPriority @default(MEDIUM)
+  category        String?
+  tags            String[]       @default([])
+  sentiment       String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  resolvedAt      DateTime?
+
+  // Relations
+  customerId      String
+  customer        User      @relation("CustomerTickets", fields: [customerId], references: [id], onDelete: Cascade)
+  assignedAgentId String?
+  assignedAgent   User?     @relation("AgentTickets", fields: [assignedAgentId], references: [id], onDelete: SetNull)
+  messages        Message[]
+
+  @@index([customerId])
+  @@index([assignedAgentId])
+  @@index([status])
+  @@index([priority])
+  @@index([ticketNumber])
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  content   String
+  type      MessageType @default(CUSTOMER)
+  createdAt DateTime    @default(now())
+
+  // Relations
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([authorId])
+}
